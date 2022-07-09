@@ -4,9 +4,8 @@ setwd("/home/vega/James/esr/floral/R")
 # Load the library
 suppressPackageStartupMessages(library(flowCore))
 suppressPackageStartupMessages(library(reshape2))
-suppressPackageStartupMessages(library(ggcyto))
+# suppressPackageStartupMessages(library(ggcyto))
 suppressPackageStartupMessages(library(viridis))
-suppressPackageStartupMessages(library(hrbrthemes))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggridges))
 
@@ -44,7 +43,6 @@ ggplot(data = exprsDataSlotMelted, aes(x = value, color = variable, fill = varia
   geom_histogram(alpha = 0.6, binwidth = 5) +
   scale_fill_viridis(discrete = TRUE) +
   scale_color_viridis(discrete = TRUE) +
-  theme_ipsum() +
   theme(
     legend.position = "none",
     panel.spacing = unit(0.1, "lines"),
@@ -64,7 +62,7 @@ B <- round(R / K)
 ggplot(data = exprs_FSC_A, aes(x = value)) +
   geom_histogram(binwidth = B, fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
   ggtitle("FSC_A") +
-  theme_ipsum() +
+  # theme_ipsum() +
   theme(
     plot.title = element_text(size = 15)
   )
