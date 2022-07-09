@@ -1,5 +1,5 @@
-setwd("~/Downloads/jamesData")
-styler::style_dir()
+setwd("/home/vega/James/esr/floral/R")
+#styler::style_dir()
 
 # Load the library
 suppressPackageStartupMessages(library(flowCore))
@@ -11,7 +11,7 @@ suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggridges))
 
 # Load the dataset
-fcsObject <- read.FCS("example.fcs", transformation = FALSE)
+fcsObject <- read.FCS("../testData/exampleInputFile.fcs", transformation = FALSE)
 
 # Exploration
 summary(fcsObject)
