@@ -1,13 +1,17 @@
-setwd("/home/vega/James/esr/floral/R/app")
+#setwd("/home/vega/James/esr/floral/R/app")
 
 # libs
+library(BiocManager)
+options(repos = BiocManager::repositories())
 suppressPackageStartupMessages(require(shiny))
 suppressPackageStartupMessages(require(shinythemes))
 suppressPackageStartupMessages(require(shinycssloaders))
+suppressPackageStartupMessages(require(reshape2))
 suppressPackageStartupMessages(require(flowCore))
 suppressPackageStartupMessages(require(viridis))
 suppressPackageStartupMessages(require(tidyverse))
 suppressPackageStartupMessages(require(ggridges))
+
 spinType <- 6
 
 # Custom Function
