@@ -3,14 +3,16 @@ setwd("/home/vega/James/esr/floral/R")
 
 # Load the library
 suppressPackageStartupMessages(library(flowCore))
+library(flowViz)
 suppressPackageStartupMessages(library(reshape2))
-# suppressPackageStartupMessages(library(ggcyto))
+suppressPackageStartupMessages(library(ggcyto))
+suppressPackageStartupMessages(library(flowStats))
 suppressPackageStartupMessages(library(viridis))
 suppressPackageStartupMessages(library(tidyverse))
 suppressPackageStartupMessages(library(ggridges))
 
 # Load the dataset
-fcsObject <- read.FCS("../testData/exampleInputFile.fcs", transformation = FALSE)
+fcsObject <- read.FCS("exampleInputFile.fcs", transformation = FALSE)
 
 # Exploration
 summary(fcsObject)
@@ -18,60 +20,34 @@ summary(fcsObject) # Set up in table
 colnames(fcsObject) # Drop down
 slotNames(fcsObject) # Always fixed
 
-# Check and Load
-for (i in slotNames(fcsObject)) {
-  if (!is.null(slot(fcsObject, name = i))) {
-    if (i == "exprs") {
-      exprsDataSlot <- as.data.frame(slot(fcsObject, name = i))
-    } else if (i == "parameters") {
-      parametersSlot <- slot(fcsObject, name = i)
-      parametersDataSlot <- slot(parametersSlot, name = "data")
-      parametersVarMetaDataSlot <- slot(parametersSlot, name = "varMetadata")
-    } else if (i == "description") {
-      descriptionDataSlot <- as.data.frame(slot(fcsObject, name = i))
-    }
-  } else {
-    print(paste(i, "slot is empty"))
-  }
-}
+exprsData <- as.data.frame(fcsObject@exprs)
 
-# Melt Expression Data
-exprsDataSlotMelted <- as.data.frame(melt(exprsDataSlot, id = "Time"))
+exprsData <- exprsData[, c("Time", "FSC-A", "FSC-W")]
 
 
-ggplot(data = exprsDataSlotMelted, aes(x = value, color = variable, fill = variable)) +
-  geom_histogram(alpha = 0.6, binwidth = 5) +
-  scale_fill_viridis(discrete = TRUE) +
-  scale_color_viridis(discrete = TRUE) +
+
+p <- ggplot(exprsData) + geom_hex(aes(x = `FSC-A`, y =  `FSC-W`),bins =200) + theme_bw()+
   theme(
-    legend.position = "none",
-    panel.spacing = unit(0.1, "lines"),
-    strip.text.x = element_text(size = 8)
-  ) +
-  xlab("") +
-  ylab("Assigned Probability (%)") +
-  facet_wrap(~variable)
-
-
-exprs_FSC_A <- exprsDataSlotMelted[exprsDataSlotMelted$variable == "FSC-A", ]
-
-K <- round(1 + 3.322 * log(nrow(exprs_FSC_A)))
-R <- round(max(exprs_FSC_A$value)) - round(min(exprs_FSC_A$value))
-B <- round(R / K)
-
-ggplot(data = exprs_FSC_A, aes(x = value)) +
-  geom_histogram(binwidth = B, fill = "#69b3a2", color = "#e9ecef", alpha = 0.9) +
-  ggtitle("FSC_A") +
-  # theme_ipsum() +
-  theme(
-    plot.title = element_text(size = 15)
+    plot.title = element_text(size = 15),
+    strip.background = element_blank(),
+    strip.text = element_blank(),
+    panel.background = element_blank(),
+    panel.grid.major = element_line(size = rel(0.3), linetype = 2, colour = "#e65320"),
+    panel.grid.minor = element_line(size = rel(0.1), linetype = 1, colour = "#e65320")
   )
+p
+lg <- flowStats::lymphGate(fcsObject, channels=c("FSC-A", "SSC-H"), scale=16)
+fres <- filter(fcsObject, lg)
+p <- p + geom_gate(lg)+ geom_stats()
+p
+
+library(hexbin)
+
+
+hex <- hexbin(exprsData$`FSC-A`, exprsData$`FSC-W`, xbins = 200,
+              colramp = colorRampPalette(hcl.colors(12, "GnBu")))
+plot(hex)
 
 
 
-ggplot(data = exprs_FSC_A, aes(x = value)) +
-  geom_density(fill = "#69b3a2", color = "#e9ecef", alpha = 0.2) +
-  theme_ipsum() +
-  theme(
-    plot.title = element_text(size = 15)
-  )
+xyplot("SSC-H" ~ "FSC-A" | Visit, data=fcsObject)
