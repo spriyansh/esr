@@ -69,10 +69,22 @@ RUN Rscript -e 'install.packages("shinythemes", repos = "https://cran.us.r-proje
 RUN Rscript -e 'install.packages("shinycssloaders", repos = "https://cran.us.r-project.org")'
 RUN Rscript -e 'install.packages("reshape2", repos = "https://cran.us.r-project.org")'
 
+RUN Rscript -e 'BiocManager::install(c("flowCore","ggcyto","flowStats","viridis","flowViz"), update = TRUE, ask = FALSE, Ncpus = 4)'
+
+RUN Rscript -e 'suppressPackageStartupMessages(require(tidyverse)); suppressPackageStartupMessages(require(shiny)); suppressPackageStartupMessages(require(shinythemes));'
+RUN Rscript -e 'suppressPackageStartupMessages(require(shinycssloaders)); suppressPackageStartupMessages(require(reshape2)); suppressPackageStartupMessages(require(flowCore));'
+RUN Rscript -e 'suppressPackageStartupMessages(require(ggcyto)); suppressPackageStartupMessages(require(flowStats)); suppressPackageStartupMessages(require(viridis));'
+RUN Rscript -e 'suppressPackageStartupMessages(require(flowViz))'
 
 RUN mkdir -p james
 
 WORKDIR /james
+
+RUN git clone https://github.com/spriyansh/esr.git
+
+WORKDIR /james/esr/floral/R/
+
+RUN Rscript -e 'shiny::runApp("app")'
 
 RUN echo "--Complete--"
 
