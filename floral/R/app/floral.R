@@ -2,13 +2,12 @@
 # styler::style_file("floral.R")
 
 # libs
+options(repos = BiocManager::repositories())
 suppressPackageStartupMessages(require(tidyverse))
 suppressPackageStartupMessages(require(shiny))
 suppressPackageStartupMessages(require(shinythemes))
 suppressPackageStartupMessages(require(shinycssloaders))
 suppressPackageStartupMessages(require(reshape2))
-library(BiocManager)
-options(repos = BiocManager::repositories())
 suppressPackageStartupMessages(require(flowCore))
 suppressPackageStartupMessages(require(ggcyto))
 suppressPackageStartupMessages(require(flowStats))
