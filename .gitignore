@@ -3,3 +3,4 @@ floral/R/.Rhistory
 floral/testData/exampleInputFile.fcs
 floral/R/app/exampleInputFile.fcs
 floral/R/app/rsconnect/
+dockerFiles/floralDocker/logs/

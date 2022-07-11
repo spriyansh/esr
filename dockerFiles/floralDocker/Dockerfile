@@ -1,4 +1,5 @@
-From public.ecr.aws/lts/ubuntu:20.04_stable
+#From public.ecr.aws/lts/ubuntu:20.04_stable
+FROM rocker/shiny:4.0.5
 
 MAINTAINER Priyansh Srivastava <psrivastava@bioba.com>
 
@@ -8,40 +9,9 @@ RUN echo "Install begin"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
-    libmysqlclient-dev \
-    libpng-dev \
-    libmysqlclient-dev \
-    libncurses-dev \
-    libssl-dev \
-    python3 \
-    python3-pip \
-    python3-dev \
-    gfortran \
-    perl \
-    liblzma-dev \
-    libpcre2-dev \
-    libcurl4-openssl-dev \
-    libreadline-gplv2-dev \
-    libncursesw5-dev \
-    libncurses5-dev \
-    libssl-dev \
-    libsqlite3-dev \
-    tk-dev \
-    libgdbm-dev \
-    libc6-dev \
     libbz2-dev \
-    libffi-dev \
-    zlib1g-dev \
-    libudunits2-dev \
-    libgdal-dev \
-    libgeos-dev \
-    libproj-dev \
-    wget \
-    libharfbuzz-dev \
-    libfribidi-dev \
-    cmake \
-    libcairo2-dev \
-    libxt-dev \
+     lzma-dev \
+     liblzma-dev \
     git-all
 
 RUN apt-get update
@@ -58,6 +28,7 @@ ENV PATH=$PATH:~/.local/bin/
 RUN R --version
 
 RUN echo "Installed R"
+RUN echo "Installed R2"
 
 WORKDIR /
 
@@ -75,16 +46,23 @@ RUN Rscript -e 'suppressPackageStartupMessages(require(tidyverse)); suppressPack
 RUN Rscript -e 'suppressPackageStartupMessages(require(shinycssloaders)); suppressPackageStartupMessages(require(reshape2)); suppressPackageStartupMessages(require(flowCore));'
 RUN Rscript -e 'suppressPackageStartupMessages(require(ggcyto)); suppressPackageStartupMessages(require(flowStats)); suppressPackageStartupMessages(require(viridis));'
 RUN Rscript -e 'suppressPackageStartupMessages(require(flowViz))'
+RUN Rscript -e 'install.packages("DT", repos = "https://cran.us.r-project.org")'
 
-RUN mkdir -p james
-
-WORKDIR /james
+RUN echo "Installed R1"
 
 RUN git clone https://github.com/spriyansh/esr.git
 
-WORKDIR /james/esr/floral/R/
+RUN chmod 777 esr/*
 
-RUN Rscript -e 'shiny::runApp("app")'
+RUN cp /esr/floral/R/app/* /srv/shiny-server/
+
+USER shiny
+
+EXPOSE 3838
+
+CMD R -e "options('shiny.port'=3838,shiny.host='0.0.0.0');experimentdocker::run_app()"
+
+CMD ["/usr/bin/shiny-server"]
 
 RUN echo "--Complete--"
 
